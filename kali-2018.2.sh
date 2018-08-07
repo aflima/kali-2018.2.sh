@@ -741,7 +741,7 @@ update-alternatives --set x-session-manager /usr/bin/xfce4-session   #update-alt
 export DISPLAY=:0.0
 #--- axiom / axiomd (May 18 2010) XFCE4 theme ~ http://xfce-look.org/content/show.php/axiom+xfwm?content=90145
 mkdir -p ~/.themes/
-timeout 300 curl --progress -k -L -f "https://www.opendesktop.org/p/1016679/startdownload?file_id=1461767736&file_name=90145-axiom.tar.gz&file_type=application/x-gzip&file_size=134386&url=https%3A%2F%2Fdl.opendesktop.org%2Fapi%2Ffiles%2Fdownloadfile%2Fid%2F1461767736%2Fs%2F8223980103777ea955eb1319e2d059e3%2Ft%2F1533601487%2Fu%2F%2F90145-axiom.tar.gzhttps://www.opendesktop.org/p/1016679/startdownload?file_id=1461767736&file_name=90145-axiom.tar.gz&file_type=application/x-gzip&file_size=134386&url=https%3A%2F%2Fdl.opendesktop.org%2Fapi%2Ffiles%2Fdownloadfile%2Fid%2F1461767736%2Fs%2F8223980103777ea955eb1319e2d059e3%2Ft%2F1533601487%2Fu%2F%2F90145-axiom.tar.gzhttps://www.opendesktop.org/p/1016679/startdownload?file_id=1461767736&file_name=90145-axiom.tar.gz&file_type=application/x-gzip&file_size=134386&url=https%3A%2F%2Fdl.opendesktop.org%2Fapi%2Ffiles%2Fdownloadfile%2Fid%2F1461767736%2Fs%2F8223980103777ea955eb1319e2d059e3%2Ft%2F1533601487%2Fu%2F%2F90145-axiom.tar.gzhttps://www.opendesktop.org/p/1016679/startdownload?file_id=1461767736&file_name=90145-axiom.tar.gz&file_type=application/x-gzip&file_size=134386&url=https%3A%2F%2Fdl.opendesktop.org%2Fapi%2Ffiles%2Fdownloadfile%2Fid%2F1461767736%2Fs%2F8223980103777ea955eb1319e2d059e3%2Ft%2F1533601487%2Fu%2F%2F90145-axiom.tar.gzhttps://www.opendesktop.org/p/1016679/startdownload?file_id=1461767736&file_name=90145-axiom.tar.gz&file_type=application/x-gzip&file_size=134386&url=https%3A%2F%2Fdl.opendesktop.org%2Fapi%2Ffiles%2Fdownloadfile%2Fid%2F1461767736%2Fs%2F8223980103777ea955eb1319e2d059e3%2Ft%2F1533601487%2Fu%2F%2F90145-axiom.tar.gzhttps://www.opendesktop.org/p/1016679/startdownload?file_id=1461767736&file_name=90145-axiom.tar.gz&file_type=application/x-gzip&file_size=134386&url=https%3A%2F%2Fdl.opendesktop.org%2Fapi%2Ffiles%2Fdownloadfile%2Fid%2F1461767736%2Fs%2F8223980103777ea955eb1319e2d059e3%2Ft%2F1533601487%2Fu%2F%2F90145-axiom.tar.gzhttps://www.opendesktop.org/p/1016679/startdownload?file_id=1461767736&file_name=90145-axiom.tar.gz&file_type=application/x-gzip&file_size=134386&url=https%3A%2F%2Fdl.opendesktop.org%2Fapi%2Ffiles%2Fdownloadfile%2Fid%2F1461767736%2Fs%2F8223980103777ea955eb1319e2d059e3%2Ft%2F1533601487%2Fu%2F%2F90145-axiom.tar.gzhttps://www.opendesktop.org/p/1016679/startdownload?file_id=1461767736&file_name=90145-axiom.tar.gz&file_type=application/x-gzip&file_size=134386&url=https%3A%2F%2Fdl.opendesktop.org%2Fapi%2Ffiles%2Fdownloadfile%2Fid%2F1461767736%2Fs%2F8223980103777ea955eb1319e2d059e3%2Ft%2F1533601487%2Fu%2F%2F90145-axiom.tar.gz" > /tmp/axiom.tar.gz \
+timeout 300 curl --progress -k -L -f "https://www.opendesktop.org/p/1016679/startdownload?file_id=1461767736&file_name=90145-axiom.tar.gz&file_type=application/x-gzip&file_size=134386&url=https%3A%2F%2Fdl.opendesktop.org%2Fapi%2Ffiles%2Fdownloadfile%2Fid%2F1461767736%2Fs%2Fac6e275097e42b8d14f10733fbfcd360%2Ft%2F1533677048%2Fu%2F%2F90145-axiom.tar.gz" > /tmp/axiom.tar.gz \
   || echo -e ' '${RED}'[!]'${RESET}" Issue downloading axiom.tar.gz" 1>&2    #***!!! hardcoded path!
 tar -zxf /tmp/axiom.tar.gz -C ~/.themes/
 xfconf-query -n -c xsettings -p /Net/ThemeName -s "axiomd"
@@ -1669,8 +1669,8 @@ EOF
 #--- Add keyboard shortcut (CTRL+r) to run the conky refresh script
 file=~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml   #; [ -e "${file}" ] && cp -n $file{,.bkup}
 if [ -e "${file}" ]; then
-  grep -q '<property name="&lt;Primary&gt;&lt;Alt&gt;c" type="string" value="/usr/local/bin/start-conky"/>' "${file}" \
-    || sed -i 's#<property name="\&lt;Alt\&gt;F2" type="string" value="xfrun4"/>#<property name="\&lt;Alt\&gt;F2" type="string" value="xfrun4"/>\n      <property name="\&lt;Primary\&gt;r" type="string" value="/usr/local/bin/start-conky"/>#' "${file}"
+  grep -q '<property name="\&lt;Primary\&gt;\&lt;Alt\&gt;c" type="string" value="/usr/local/bin/start-conky"/>' "${file}" \
+    || sed -i 's#<property name="\&lt;Alt\&gt;F2" type="string" value="xfrun4"/>#<property name="\&lt;Alt\&gt;F2" type="string" value="xfrun4"/>\n      <property name="\&lt;Primary\&gt;\&lt;Alt\&gt;c" type="string" value="/usr/local/bin/start-conky"/>#' "${file}"
 fi
 
 
@@ -3041,9 +3041,10 @@ apt -y -qq install wordlists curl \
 [ -e /usr/share/wordlists/rockyou.txt.gz ] \
   && gzip -dc < /usr/share/wordlists/rockyou.txt.gz > /usr/share/wordlists/rockyou.txt
 #--- Add 10,000 Top/Worst/Common Passwords
-mkdir -p /usr/share/wordlists/
+mkdir -p /usr/share/wordlists/ 
 (curl --progress -k -L -f "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt" > /usr/share/wordlists/10kcommon.txt 2>/dev/null \
-  || echo -e ' '${RED}'[!]'${RESET}" Issue downloading 10kcommon.zip" 1>&2
+  || echo -e ' '${RED}'[!] Issue downloading 10kcommon.zip'${RESET} 1>&2
+
 #--- Linking to more - folders
 [ -e /usr/share/dirb/wordlists ] \
   && ln -sf /usr/share/dirb/wordlists /usr/share/wordlists/dirb
