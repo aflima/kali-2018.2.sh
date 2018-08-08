@@ -741,7 +741,7 @@ update-alternatives --set x-session-manager /usr/bin/xfce4-session   #update-alt
 export DISPLAY=:0.0
 #--- axiom / axiomd (May 18 2010) XFCE4 theme ~ http://xfce-look.org/content/show.php/axiom+xfwm?content=90145
 mkdir -p ~/.themes/
-timeout 300 curl --progress -k -L -f "http://alexflima.com.br/Kali/axiom.tar.gz" > /tmp/axiom.tar.gz \
+timeout 300 curl --progress -k -L -f "https://github.com/aflima/kali-2018.2.sh/raw/master/axiom.tar.gz" > /tmp/axiom.tar.gz \
   || echo -e ' '${RED}'[!]'${RESET}" Issue downloading axiom.tar.gz" 1>&2    #***!!! hardcoded path!
 tar -zxf /tmp/axiom.tar.gz -C ~/.themes/
 xfconf-query -n -c xsettings -p /Net/ThemeName -s "axiomd"
@@ -1396,7 +1396,7 @@ sed -i 's/^.*extensions.https_everywhere._observatory.popup_shown.*/user_pref("e
 sed -i 's/^.network.security.ports.banned.override/user_pref("network.security.ports.banned.override", "1-65455");' "${file}" 2>/dev/null \
   || echo 'user_pref("network.security.ports.banned.override", "1-65455");' >> "${file}"
 #--- Replace bookmarks (base: http://pentest-bookmarks.googlecode.com) ####DONT WORK ANY MORE if you want import this bookmark.json######
-timeout 300 curl --progress -k -L -f "https://alexflima.com.br/Kali/bookmarks.json" \
+timeout 300 curl --progress -k -L -f "https://raw.githubusercontent.com/aflima/kali-2018.2.sh/master/bookmarks.json" \
   -o ~/Desktop/bookmarks.json \
     || echo -e ' '${RED}'[!]'${RESET}" Issue downloading bookmarks.json" 1>&2
 ##### TO IMPORT BOOKMARKS.JSON####
