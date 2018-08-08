@@ -2113,7 +2113,8 @@ apt -y -qq install ipcalc sipcalc \
 
 ##### Install asciinema
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}asciinema${RESET} ~ CLI terminal recorder"
-curl -s -L https://asciinema.org/install | sh
+apt -y -qq asciinema \
+  || echo -e ' '${RED}'[!] Issue with asciinema'${RESET} 1>&2
 
 
 ##### Install xfce4-screenshooter
@@ -2328,7 +2329,7 @@ apt -y -qq install aircrack-ng curl \
 #--- Setup hardware database
 mkdir -p /etc/aircrack-ng/
 (timeout 600 airodump-ng-oui-update 2>/dev/null) \
-  || timeout 600 curl --progress -k -L -f "http://standards-oui.ieee.org/oui/oui.txt" > /etc/aircrack-ng/oui.txt
+  || timeout 600 curl --progress -k -L -f "https://raw.githubusercontent.com/aflima/kali-2018.2.sh/master/oui.txt" > /etc/aircrack-ng/oui.txt
 [ -e /etc/aircrack-ng/oui.txt ] \
   && (\grep "(hex)" /etc/aircrack-ng/oui.txt | sed 's/^[ \t]*//g;s/[ \t]*$//g' > /etc/aircrack-ng/airodump-ng-oui.txt)
 [[ ! -f /etc/aircrack-ng/airodump-ng-oui.txt ]] \
@@ -2918,7 +2919,7 @@ apt -y -qq install veil \
 apt -y -qq install upx-ucl curl \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 mkdir -p /opt/packers/
-echo -n '[1/3]'; timeout 300 curl --progress -k -L -f "https://softpedia-secure-download.com/dl/cba409a168f14ad6ffef1ef55f7c952d/5b68fc0d/100129381/software/arhivatoare/cexe.exe" > /opt/packers/cexe.exe \
+echo -n '[1/3]'; timeout 300 curl --progress -k -L -f "https://github.com/aflima/kali-2018.2.sh/raw/master/cexe.exe" > /opt/packers/cexe.exe \
   || echo -e ' '${RED}'[!]'${RESET}" Issue downloading cexe.exe" 1>&2            #***!!! hardcoded version! Need to manually check for updates
 echo -n '[2/3]'; timeout 300 curl --progress -k -L -f "http://www.farbrausch.de/~fg/kkrunchy/kkrunchy_023a2.zip" > /opt/packers/kkrunchy.zip \
   && unzip -q -o -d /opt/packers/ /opt/packers/kkrunchy.zip \
@@ -3042,7 +3043,7 @@ apt -y -qq install wordlists curl \
   && gzip -dc < /usr/share/wordlists/rockyou.txt.gz > /usr/share/wordlists/rockyou.txt
 #--- Add 10,000 Top/Worst/Common Passwords
 mkdir -p /usr/share/wordlists/ 
-(curl --progress -k -L -f "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt" > /usr/share/wordlists/10kcommon.txt 2>/dev/null \
+curl --progress -k -L -f "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt" > /usr/share/wordlists/10kcommon.txt 2>/dev/null \
   || echo -e ' '${RED}'[!] Issue downloading 10kcommon.zip'${RESET} 1>&2
 
 #--- Linking to more - folders
