@@ -228,7 +228,6 @@ timeout 300 curl --progress -k -L -f "https://status.github.com/api/status.json"
   || (echo -e ' '${RED}'[!]'${RESET}" ${RED}GitHub is currently having issues${RESET}. ${BOLD}Lots may fail${RESET}. See: https://status.github.com/" 1>&2 \
     && exit 1)
 
-
 ##### Enable default network repositories ~ http://docs.kali.org/general-use/kali-linux-sources-list-repositories
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Enabling default OS ${GREEN}network repositories${RESET}"
 #--- Add network repositories
@@ -414,6 +413,15 @@ echo -e " ${YELLOW}[i]${RESET}  ...this ${BOLD}may take a while${RESET} dependin
 apt -y -qq install kali-linux-all \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
+##### Install Atom
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Atom${RESET} ~ code editor"
+apt -y -qq install curl gconf2 gconf-service gvfs-bin \
+  || echo -e ' '${RED}'[!] Issue with apt'${RESET} 1>&2
+timeout 300 curl --progress -k -L -f "https://atom.io/download/deb" > /tmp/atom.deb \
+  || echo -e ' '${RED}'[!]'${RESET}" Issue downloading atom.deb" 1>&2   #***!!! hardcoded version! Need to manually check for updates
+if [ -e /tmp/atom.deb ]; then
+  dpkg -i /tmp/atom.deb
+fi
 
 ##### Set audio level
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Setting ${GREEN}audio${RESET} levels"
@@ -1439,8 +1447,8 @@ echo -n '[3/11]'; timeout 300 curl --progress -k -L -f "https://addons.mozilla.o
     || echo -e ' '${RED}'[!]'${RESET}" Issue downloading 'Firebug'" 1>&2
 #--- FoxyProxy Standard
 echo -n '[4/11]'; timeout 300 curl --progress -k -L -f "https://addons.mozilla.org/firefox/downloads/file/579772/foxyproxy_standard-4.6.5-fx+sm+tb.xpi?src=version-history" \
-  -o "${ffpath}/foxyproxy-standard@eric.h.jung.xpi" \
-    || echo -e ' '${RED}'[!]'${RESET}" Issue downloading 'FoxyProxy Basic'" 1>&2
+  -o "${ffpath}/foxyproxy@eric.h.jung.xpi" \
+    || echo -e ' '${RED}'[!]'${RESET}" Issue downloading 'FoxyProxy Standard'" 1>&2
 #--- User Agent Overrider
 echo -n '[5/11]'; timeout 300 curl --progress -k -L -f "https://addons.mozilla.org/firefox/downloads/latest/429678/addon-429678-latest.xpi?src=dp-btn-primary" \
   -o "${ffpath}/useragentoverrider@qixinglu.com.xpi" \
@@ -3795,7 +3803,7 @@ fi
 
 ##### Install Atom
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Atom${RESET} ~ code editor"
-apt -y -qq install curl gconf2 gconf-service gvfs-bin \
+apt -y -qq install curl gconf-service gconf2 gconf2-common gvfs-bin libgconf-2-4 gconf-defaults-service \
 apt -y -qq --fix-broken install \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 timeout 300 curl --progress -k -L -f "https://atom.io/download/deb" > /tmp/atom.deb \
