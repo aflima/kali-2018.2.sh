@@ -405,7 +405,6 @@ if [[ $? -ne 0 ]]; then
   sleep 30s
 fi
 
-
 ##### Install "kali all" meta packages (default tool selection)
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}kali-linux-all${RESET} meta-package"
 echo -e " ${YELLOW}[i]${RESET}  ...this ${BOLD}may take a while${RESET} depending on your Kali version (e.g. ARM, light, mini or docker...)"
@@ -460,7 +459,7 @@ if [[ $(which gnome-shell) ]]; then
   gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'RIGHT'   # Set dock to the right
   gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed true         # Set dock to be always visible
   gsettings set org.gnome.shell favorite-apps \
-    "['gnome-terminal.desktop', 'org.gnome.Nautilus.desktop', 'kali-wireshark.desktop', 'firefox-esr.desktop', 'kali-burpsuite.desktop', 'kali-msfconsole.desktop', 'gedit.desktop']"
+    "['gnome-terminal.desktop', 'org.gnome.Nautilus.desktop', 'kali-wireshark.desktop', 'firefox-esr.desktop', 'kali-burpsuite.desktop', 'kali-msfconsole.desktop', 'atom.desktop']"
   #-- Gnome Extension - Alternate-tab (So it doesn't group the same windows up)
   GNOME_EXTENSIONS=$(gsettings get org.gnome.shell enabled-extensions | sed 's_^.\(.*\).$_\1_')
   echo "${GNOME_EXTENSIONS}" | grep -q "alternate-tab@gnome-shell-extensions.gcampax.github.com" \
@@ -601,7 +600,7 @@ ln -sf /usr/share/applications/kali-wireshark.desktop        ~/.config/xfce4/pan
 ln -sf /usr/share/applications/firefox-esr.desktop           ~/.config/xfce4/panel/launcher-5/firefox-esr.desktop
 ln -sf /usr/share/applications/kali-burpsuite.desktop        ~/.config/xfce4/panel/launcher-6/kali-burpsuite.desktop
 ln -sf /usr/share/applications/kali-msfconsole.desktop       ~/.config/xfce4/panel/launcher-7/kali-msfconsole.desktop
-ln -sf /usr/share/applications/org.gnome.gedit.desktop       ~/.config/xfce4/panel/launcher-8/textedit.desktop
+ln -sf /usr/share/applications/atom.desktop                  ~/.config/xfce4/panel/launcher-8/atom.desktop
 ln -sf /usr/share/applications/xfce4-appfinder.desktop       ~/.config/xfce4/panel/launcher-9/xfce4-appfinder.desktop
 #--- XFCE settings
 _TMP=""
@@ -623,7 +622,7 @@ xfconf-query -n -c xfce4-panel -p /plugins/plugin-5 -t string -s launcher       
 [ "${burpFree}" != "false" ] \
   && xfconf-query -n -c xfce4-panel -p /plugins/plugin-6 -t string -s launcher        # burpsuite  ID: kali-burpsuite
 xfconf-query -n -c xfce4-panel -p /plugins/plugin-7 -t string -s launcher             # msf        ID: kali-msfconsole
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-8 -t string -s launcher             # gedit      ID: org.gnome.gedit.desktop
+xfconf-query -n -c xfce4-panel -p /plugins/plugin-8 -t string -s launcher             # atom       ID: atom.desktop
 xfconf-query -n -c xfce4-panel -p /plugins/plugin-9 -t string -s launcher             # search     ID: xfce4-appfinder
 xfconf-query -n -c xfce4-panel -p /plugins/plugin-10 -t string -s tasklist
 xfconf-query -n -c xfce4-panel -p /plugins/plugin-11 -t string -s separator
@@ -649,8 +648,8 @@ xfconf-query -n -c xfce4-panel -p /plugins/plugin-5/items -t string -s "firefox-
   && xfconf-query -n -c xfce4-panel -p /plugins/plugin-6/items -t string -s "kali-burpsuite.desktop" -a
 #--- metasploit
 xfconf-query -n -c xfce4-panel -p /plugins/plugin-7/items -t string -s "kali-msfconsole.desktop" -a
-#--- gedit
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-8/items -t string -s "textedit.desktop" -a
+#--- atom
+xfconf-query -n -c xfce4-panel -p /plugins/plugin-8/items -t string -s "atom.desktop" -a
 #--- search
 xfconf-query -n -c xfce4-panel -p /plugins/plugin-9/items -t string -s "xfce4-appfinder.desktop" -a
 #--- tasklist (& separator - required for padding)
@@ -2121,7 +2120,7 @@ apt -y -qq install ipcalc sipcalc \
 
 ##### Install asciinema
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}asciinema${RESET} ~ CLI terminal recorder"
-apt -y -qq asciinema \
+apt -y -qq install asciinema \
   || echo -e ' '${RED}'[!] Issue with asciinema'${RESET} 1>&2
 
 
@@ -2328,7 +2327,6 @@ apt -y -qq install lbd \
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}wafw00f${RESET} ~ WAF detector"
 apt -y -qq install wafw00f \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-
 
 ##### Install aircrack-ng
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Aircrack-ng${RESET} ~ Wi-Fi cracking suite"
@@ -3800,20 +3798,6 @@ if [ -e /tmp/dbeaver.deb ]; then
   ln -sf /usr/share/dbeaver/dbeaver /usr/local/bin/dbeaver
 fi
 
-
-##### Install Atom
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Atom${RESET} ~ code editor"
-apt -y -qq install curl gconf-service gconf2 gconf2-common gvfs-bin libgconf-2-4 gconf-defaults-service \
-apt -y -qq --fix-broken install \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-timeout 300 curl --progress -k -L -f "https://atom.io/download/deb" > /tmp/atom.deb \
-  || echo -e ' '${RED}'[!]'${RESET}" Issue downloading atom.deb" 1>&2   #***!!! hardcoded version! Need to manually check for updates
-if [ -e /tmp/atom.deb ]; then
-  dpkg -i /tmp/atom.deb
-  #--- Add to path
-  #mkdir -p /usr/local/bin/
-  #ln -sf /usr/share/atom/atom /usr/local/bin/atom
-fi
 
 ##### Install ashttp
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ashttp${RESET} ~ terminal via the web"
