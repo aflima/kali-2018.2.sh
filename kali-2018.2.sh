@@ -1146,6 +1146,7 @@ cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 [global_config]
   enabled_plugins = TerminalShot, LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
+  window_state = maximise
 [keybindings]
 [profiles]
   [[default]]
@@ -1155,6 +1156,14 @@ cat <<EOF > "${file}" \
     background_type = transparent
     scrollback_infinite = True
     show_titlebar = False
+    cursor_color = "#aaaaaa"
+    font = Monospace 8
+    foreground_color = "#00ff00"
+    icon_bell = False
+    palette = "#000000:#cc0000:#4e9a06:#c4a000:#3465a4:#75507b:#06989a:#d3d7cf:#555753:#ef2929:#8ae234:#fce94f:#729fcf:#ad7fa8:#34e2e2:#eeeeec"
+    scrollback_infinite = True
+    scrollbar_position = hidden
+    use_system_font = False
 [layouts]
   [[default]]
     [[[child1]]]
