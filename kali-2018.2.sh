@@ -426,29 +426,6 @@ if [ -e /tmp/atom.deb ]; then
   dpkg -i /tmp/atom.deb
 fi
 
-##### Install aircrack-ng
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Aircrack-ng${RESET} ~ Wi-Fi cracking suite"
-apt -y -qq install aircrack-ng curl \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#--- Setup hardware database
-mkdir -p /etc/aircrack-ng/
-(airodump-ng-oui-update 2>/dev/null) \
-  || curl --progress -k -L -f "https://raw.githubusercontent.com/aflima/kali-2018.2.sh/master/oui.txt" > /etc/aircrack-ng/oui.txt
-[ -e /etc/aircrack-ng/oui.txt ] \
-  && (\grep "(hex)" /etc/aircrack-ng/oui.txt | sed 's/^[ \t]*//g;s/[ \t]*$//g' > /etc/aircrack-ng/airodump-ng-oui.txt)
-[[ ! -f /etc/aircrack-ng/airodump-ng-oui.txt ]] \
-  && echo -e ' '${RED}'[!]'${RESET}" Issue downloading oui.txt" 1>&2
-#--- Setup alias
-file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
-([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-grep -q '^## aircrack-ng' "${file}" 2>/dev/null \
-  || echo -e '## aircrack-ng\nalias aircrack-ng="aircrack-ng -z"\n' >> "${file}"
-grep -q '^## airodump-ng' "${file}" 2>/dev/null \
-  || echo -e '## airodump-ng \nalias airodump-ng="airodump-ng --manufacturer --wps --uptime"\n' >> "${file}"    # aircrack-ng 1.2 rc2
-#--- Apply new alias
-source "${file}" || source ~/.zshrc
-
-
 ##### Set audio level
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Setting ${GREEN}audio${RESET} levels"
 systemctl --user enable pulseaudio
@@ -1213,6 +1190,30 @@ sed -i 's/ZSH_THEME=.*/ZSH_THEME="agnoster"/' "${file}"   # Other themes: mh, jr
 sed -i 's/plugins=(.*)/plugins=(git git-extras tmux dirhistory python pip)/' "${file}"
 #--- Set zsh as default shell (current user)
 chsh -s "$(which zsh)"
+
+
+##### Install aircrack-ng
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Aircrack-ng${RESET} ~ Wi-Fi cracking suite"
+apt -y -qq install aircrack-ng curl \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#--- Setup hardware database
+mkdir -p /etc/aircrack-ng/
+timeout 600 airodump-ng-oui-update 2>/dev/null \
+  || echo -e " ${YELLOW}[i]${RESET} Already updated oui.txt?" 1>&2
+timeout 600 curl --progress -k -L -f "http://standards-oui.ieee.org/oui/oui.txt" > /etc/aircrack-ng/oui.txt \
+  || echo -e ' '${RED}'[!]'${RESET}" Issue downloading oui.txt" 1>&2
+[ -e /etc/aircrack-ng/oui.txt ] \
+  && (\grep "(hex)" /etc/aircrack-ng/oui.txt | sed 's/^[ \t]*//g;s/[ \t]*$//g' > /etc/aircrack-ng/airodump-ng-oui.txt)
+[[ ! -f /etc/aircrack-ng/airodump-ng-oui.txt ]] \
+  && echo -e ' '${RED}'[!]'${RESET}" Issue downloading oui.txt" 1>&2
+#--- Setup alias
+file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
+([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
+grep -q '^## aircrack-ng' "${file}" 2>/dev/null \
+  || echo -e '## aircrack-ng\nalias aircrack-ng="aircrack-ng -z"\n' >> "${file}"
+grep -q '^## airodump-ng' "${file}" 2>/dev/null \
+  || echo -e '## airodump-ng \nalias airodump-ng="airodump-ng --manufacturer --wps --uptime"\n' >> "${file}"    # aircrack-ng 1.2 rc2
+#--- Apply new alias
 
 
 ##### Install tmux - all users
@@ -2118,7 +2119,7 @@ Alias /rips /opt/rips-git
 </Directory>
 EOF
 ln -sf /etc/apache2/conf-available/rips.conf /etc/apache2/conf-enabled/rips.conf
-systemctl restart apache2
+apache2ctl restart > /dev/null
 
 
 ##### Install graudit
@@ -2957,54 +2958,6 @@ ln -sf /opt/packers/ /usr/share/windows-binaries/packers
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}hyperion${RESET} ~ bypassing anti-virus"
 apt -y -qq install windows-binaries \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-# unzip -q -o -d /usr/share/windows-binaries/ $(find /usr/share/windows-binaries/ -name "Hyperion-*.zip" -type f -print -quit)
-#--- Compile
-i686-w64-mingw32-g++ -static-libgcc -static-libstdc++ \
-  $(find /usr/share/windows-binaries/ -name "hyperion.cpp" -type f -print -quit) \
-  -o /usr/share/windows-binaries/crypter.exe
-# ln -sf /usr/share/windows-binaries/Hyperion-1.0/Src/Crypter/bin/crypter.exe /usr/share/windows-binaries/Hyperion-1.0/crypter.exe                                                            #***!!! hardcoded path!
-# wine ~/.wine/drive_c/MinGW/bin/g++.exe $(find /usr/share/windows-binaries/ -name "hyperion.cpp" -type f -print -quit) \
-#   -o /usr/share/windows-binaries/hyperion.exe 2>&1 \
-#   | grep -v 'If something goes wrong, please rerun with\|for more detailed debugging output'
-#--- Add to path
-mkdir -p /usr/local/bin/
-file=/usr/local/bin/hyperion
-cat <<EOF > "${file}" \
-  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
-#!/bin/bash
-
-## Note: This is far from perfect...
-
-CWD=\$(pwd)/
-BWD="?"
-
-## Using full path?
-[ -e "/\${1}" ] && BWD=""
-
-## Using relative path?
-[ -e "./\${1}" ] && BWD="\${CWD}"
-
-## Can't find input file!
-[[ "\${BWD}" == "?" ]] && echo -e ' '${RED}'[!]'${RESET}' Cant find \$1. Quitting...' && exit
-
-## The magic!
-cd /usr/share/windows-binaries/
-$(which wine) crypter.exe \${BWD}\${1} output.exe
-
-## Restore our path
-cd \${CWD}/
-sleep 1s
-
-## Move the output file
-mv -f /usr/share/windows-binaries/output.exe \${2}
-
-## Generate file hashes
-for FILE in \${1} \${2}; do
-  echo "[i] \$(md5sum \${FILE})"
-done
-EOF
-chmod +x "${file}"
-
 
 ##### Install shellter
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}shellter${RESET} ~ dynamic shellcode injector"
