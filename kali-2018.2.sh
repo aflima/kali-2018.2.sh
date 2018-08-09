@@ -3463,7 +3463,7 @@ apt -y -qq install curl \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 timeout 300 curl --progress -k -L -f "https://gist.githubusercontent.com/douglas/1287372/raw/46f810306802099024833ea71b1af2d806561a16/update_git_repos.sh" > /opt/update_git_repos.sh \
   || echo -e ' '${RED}'[!]'${RESET}" Issue downloading update_git_repos.sh" 1>&2     #***!!! hardcoded patch
-chmod +x /opt/update_git_repos.sh
+chmod +x /opt/update_git_repos.sh >/dev/null
 
 ##### Install wig (https://bugs.kali.org/view.php?id=1932)
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}wig${RESET} ~ web application detection"
