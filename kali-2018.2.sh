@@ -42,8 +42,8 @@ if [ 1 -eq 0 ]; then    # This is never true, thus it acts as block comments ;)
 ################################################################################
 ### One liner - Grab the latest version and execute! ###########################
 ################################################################################
-wget -qO kali-rolling.sh https://raw.github.com/g0tmi1k/os-scripts/master/kali-rolling.sh \
-  && bash kali-rolling.sh -burp -keyboard gb -timezone "Europe/London"
+wget -qO kali-2018.2.sh https://raw.githubusercontent.com/aflima/kali-2018.2.sh/master/kali-2018.2.sh \
+  && bash kali-2018.2.sh -burp -dns -openvas
 ################################################################################
 fi
 
@@ -410,7 +410,11 @@ fi
 echo -e " ${YELLOW}[i]${RESET}  ...this ${BOLD}may take a while${RESET} depending on your Kali version (e.g. ARM, light, mini or docker...)"
 #--- Kali's default tools ~ https://www.kali.org/news/kali-linux-metapackages/
 apt -y -qq install kali-linux-all \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+  || echo -e ' '${RED}'[!] Issue with apt install kali-linux-all'${RESET} 1>&2
+apt -qq update \
+  || echo -e ' '${RED}'[!] Issue with apt update'${RESET} 1>&2
+apt -y -qq full-upgrade \
+  || echo -e ' '${RED}'[!] Issue with apt full-upgrade'${RESET} 1>&2
 
 ##### Install Atom
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Atom${RESET} ~ code editor"
@@ -421,6 +425,29 @@ timeout 300 curl --progress -k -L -f "https://atom.io/download/deb" > /tmp/atom.
 if [ -e /tmp/atom.deb ]; then
   dpkg -i /tmp/atom.deb
 fi
+
+##### Install aircrack-ng
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Aircrack-ng${RESET} ~ Wi-Fi cracking suite"
+apt -y -qq install aircrack-ng curl \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#--- Setup hardware database
+mkdir -p /etc/aircrack-ng/
+(timeout 600 airodump-ng-oui-update 2>/dev/null) \
+  || timeout 600 curl --progress -k -L -f "https://raw.githubusercontent.com/aflima/kali-2018.2.sh/master/oui.txt" > /etc/aircrack-ng/oui.txt
+[ -e /etc/aircrack-ng/oui.txt ] \
+  && (\grep "(hex)" /etc/aircrack-ng/oui.txt | sed 's/^[ \t]*//g;s/[ \t]*$//g' > /etc/aircrack-ng/airodump-ng-oui.txt)
+[[ ! -f /etc/aircrack-ng/airodump-ng-oui.txt ]] \
+  && echo -e ' '${RED}'[!]'${RESET}" Issue downloading oui.txt" 1>&2
+#--- Setup alias
+file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
+([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
+grep -q '^## aircrack-ng' "${file}" 2>/dev/null \
+  || echo -e '## aircrack-ng\nalias aircrack-ng="aircrack-ng -z"\n' >> "${file}"
+grep -q '^## airodump-ng' "${file}" 2>/dev/null \
+  || echo -e '## airodump-ng \nalias airodump-ng="airodump-ng --manufacturer --wps --uptime"\n' >> "${file}"    # aircrack-ng 1.2 rc2
+#--- Apply new alias
+source "${file}" || source ~/.zshrc
+
 
 ##### Set audio level
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Setting ${GREEN}audio${RESET} levels"
@@ -2327,28 +2354,6 @@ apt -y -qq install lbd \
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}wafw00f${RESET} ~ WAF detector"
 apt -y -qq install wafw00f \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-
-##### Install aircrack-ng
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Aircrack-ng${RESET} ~ Wi-Fi cracking suite"
-apt -y -qq install aircrack-ng curl \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#--- Setup hardware database
-mkdir -p /etc/aircrack-ng/
-(timeout 600 airodump-ng-oui-update 2>/dev/null) \
-  || timeout 600 curl --progress -k -L -f "https://raw.githubusercontent.com/aflima/kali-2018.2.sh/master/oui.txt" > /etc/aircrack-ng/oui.txt
-[ -e /etc/aircrack-ng/oui.txt ] \
-  && (\grep "(hex)" /etc/aircrack-ng/oui.txt | sed 's/^[ \t]*//g;s/[ \t]*$//g' > /etc/aircrack-ng/airodump-ng-oui.txt)
-[[ ! -f /etc/aircrack-ng/airodump-ng-oui.txt ]] \
-  && echo -e ' '${RED}'[!]'${RESET}" Issue downloading oui.txt" 1>&2
-#--- Setup alias
-file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
-([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-grep -q '^## aircrack-ng' "${file}" 2>/dev/null \
-  || echo -e '## aircrack-ng\nalias aircrack-ng="aircrack-ng -z"\n' >> "${file}"
-grep -q '^## airodump-ng' "${file}" 2>/dev/null \
-  || echo -e '## airodump-ng \nalias airodump-ng="airodump-ng --manufacturer --wps --uptime"\n' >> "${file}"    # aircrack-ng 1.2 rc2
-#--- Apply new alias
-source "${file}" || source ~/.zshrc
 
 
 ##### Install reaver (community fork)
