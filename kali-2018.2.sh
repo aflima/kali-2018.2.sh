@@ -432,8 +432,8 @@ apt -y -qq install aircrack-ng curl \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 #--- Setup hardware database
 mkdir -p /etc/aircrack-ng/
-(timeout 600 airodump-ng-oui-update 2>/dev/null) \
-  || timeout 600 curl --progress -k -L -f "https://raw.githubusercontent.com/aflima/kali-2018.2.sh/master/oui.txt" > /etc/aircrack-ng/oui.txt
+(airodump-ng-oui-update 2>/dev/null) \
+  || curl --progress -k -L -f "https://raw.githubusercontent.com/aflima/kali-2018.2.sh/master/oui.txt" > /etc/aircrack-ng/oui.txt
 [ -e /etc/aircrack-ng/oui.txt ] \
   && (\grep "(hex)" /etc/aircrack-ng/oui.txt | sed 's/^[ \t]*//g;s/[ \t]*$//g' > /etc/aircrack-ng/airodump-ng-oui.txt)
 [[ ! -f /etc/aircrack-ng/airodump-ng-oui.txt ]] \
@@ -1806,11 +1806,11 @@ EOF
 source "${file}" || source ~/.zshrc
 #--- Generate (Can't call alias)
 mkdir -p ~/.msf4/msfvenom/
-msfvenom --list > ~/.msf4/msfvenom/all
+# msfvenom --list > ~/.msf4/msfvenom/all - error
 msfvenom --list nops > ~/.msf4/msfvenom/nops
 msfvenom --list payloads > ~/.msf4/msfvenom/payloads
 msfvenom --list encoders > ~/.msf4/msfvenom/encoders
-msfvenom --help-formats 2> ~/.msf4/msfvenom/formats
+# msfvenom --help-formats 2> ~/.msf4/msfvenom/formats -error
 #--- First time run with Metasploit
 (( STAGE++ )); echo -e " ${GREEN}[i]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Starting Metasploit for the first time${RESET} ~ this ${BOLD}will take a ~350 seconds${RESET} (~6 mintues)"
 echo "Started at: $(date)"
@@ -1850,21 +1850,21 @@ apt -y -qq install msfpc \
 #--- Install Gedit
 apt -y -qq install gedit \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#--- Configure Gedit
-dconf write /org/gnome/gedit/preferences/editor/wrap-last-split-mode "'word'"
-dconf write /org/gnome/gedit/preferences/ui/statusbar-visible true
-dconf write /org/gnome/gedit/preferences/editor/display-line-numbers true
-dconf write /org/gnome/gedit/preferences/editor/highlight-current-line true
-dconf write /org/gnome/gedit/preferences/editor/bracket-matching true
-dconf write /org/gnome/gedit/preferences/editor/insert-spaces true
-dconf write /org/gnome/gedit/preferences/editor/auto-indent true
-for plugin in modelines sort externaltools docinfo filebrowser quickopen time spell; do
-  loaded=$( dconf read /org/gnome/gedit/plugins/active-plugins )
-  echo ${loaded} | grep -q "'${plugin}'" \
-    && continue
-  new=$( echo "${loaded} '${plugin}']" | sed "s/'] /', /" )
-  dconf write /org/gnome/gedit/plugins/active-plugins "${new}"
-done
+# #--- Configure Gedit
+# dconf write /org/gnome/gedit/preferences/editor/wrap-last-split-mode "'word'"
+# dconf write /org/gnome/gedit/preferences/ui/statusbar-visible true
+# dconf write /org/gnome/gedit/preferences/editor/display-line-numbers true
+# dconf write /org/gnome/gedit/preferences/editor/highlight-current-line true
+# dconf write /org/gnome/gedit/preferences/editor/bracket-matching true
+# dconf write /org/gnome/gedit/preferences/editor/insert-spaces true
+# dconf write /org/gnome/gedit/preferences/editor/auto-indent true
+# for plugin in modelines sort externaltools docinfo filebrowser quickopen time spell; do
+#   loaded=$( dconf read /org/gnome/gedit/plugins/active-plugins )
+#   echo ${loaded} | grep -q "'${plugin}'" \
+#     && continue
+#   new=$( echo "${loaded} '${plugin}']" | sed "s/'] /', /" )
+#   dconf write /org/gnome/gedit/plugins/active-plugins "${new}"
+# done
 
 
 ##### Install PyCharm (Community Edition)
@@ -2900,20 +2900,20 @@ unzip -q -o -d /usr/share/windows-binaries/pstools/ /tmp/pstools.zip
 unrar x -y /tmp/pshtoolkit.rar /usr/share/windows-binaries/ >/dev/null
 
 
-##### Install Python (Windows via WINE)
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Python (Windows)${RESET}"
-echo -n '[1/2]'; timeout 300 curl --progress -k -L -f "https://www.python.org/ftp/python/2.7.9/python-2.7.9.msi" > /tmp/python.msi \
-  || echo -e ' '${RED}'[!]'${RESET}" Issue downloading python.msi" 1>&2       #***!!! hardcoded path!
-echo -n '[2/2]'; timeout 300 curl --progress -k -L -f "http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win32-py2.7.exe/download" > /tmp/pywin32.exe \
-  || echo -e ' '${RED}'[!]'${RESET}" Issue downloading pywin32.exe" 1>&2      #***!!! hardcoded path!
-wine msiexec /i /tmp/python.msi /qb 2>&1 | grep -v 'If something goes wrong, please rerun with\|for more detailed debugging output'
-pushd /tmp/ >/dev/null
-rm -rf "PLATLIB/" "SCRIPTS/"
-unzip -q -o /tmp/pywin32.exe
-cp -rf PLATLIB/* ~/.wine/drive_c/Python27/Lib/site-packages/
-cp -rf SCRIPTS/* ~/.wine/drive_c/Python27/Scripts/
-rm -rf "PLATLIB/" "SCRIPTS/"
-popd >/dev/null
+# ##### Install Python (Windows via WINE)  -- Sorry got but this is better install using veil or theFatRat =\
+# (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Python (Windows)${RESET}"
+# echo -n '[1/2]'; timeout 300 curl --progress -k -L -f "https://www.python.org/ftp/python/2.7.9/python-2.7.9.msi" > /tmp/python.msi \
+#   || echo -e ' '${RED}'[!]'${RESET}" Issue downloading python.msi" 1>&2       #***!!! hardcoded path!
+# echo -n '[2/2]'; timeout 300 curl --progress -k -L -f "http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win32-py2.7.exe/download" > /tmp/pywin32.exe \
+#   || echo -e ' '${RED}'[!]'${RESET}" Issue downloading pywin32.exe" 1>&2      #***!!! hardcoded path!
+# wine msiexec /i /tmp/python.msi /qb 2>&1 | grep -v 'If something goes wrong, please rerun with\|for more detailed debugging output'
+# pushd /tmp/ >/dev/null
+# rm -rf "PLATLIB/" "SCRIPTS/"
+# unzip -q -o /tmp/pywin32.exe
+# cp -rf PLATLIB/* ~/.wine/drive_c/Python27/Lib/site-packages/
+# cp -rf SCRIPTS/* ~/.wine/drive_c/Python27/Scripts/
+# rm -rf "PLATLIB/" "SCRIPTS/"
+# popd >/dev/null
 
 
 ##### Install veil framework
@@ -2946,17 +2946,17 @@ ln -sf /opt/packers/ /usr/share/windows-binaries/packers
 
 ##### Install hyperion
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}hyperion${RESET} ~ bypassing anti-virus"
-apt -y -qq install unzip windows-binaries \
+apt -y -qq install windows-binaries \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-unzip -q -o -d /usr/share/windows-binaries/ $(find /usr/share/windows-binaries/ -name "Hyperion-*.zip" -type f -print -quit)
+# unzip -q -o -d /usr/share/windows-binaries/ $(find /usr/share/windows-binaries/ -name "Hyperion-*.zip" -type f -print -quit)
 #--- Compile
 i686-w64-mingw32-g++ -static-libgcc -static-libstdc++ \
-  /usr/share/windows-binaries/Hyperion-1.0/Src/Crypter/*.cpp \
-  -o /usr/share/windows-binaries/Hyperion-1.0/Src/Crypter/bin/crypter.exe
-ln -sf /usr/share/windows-binaries/Hyperion-1.0/Src/Crypter/bin/crypter.exe /usr/share/windows-binaries/Hyperion-1.0/crypter.exe                                                            #***!!! hardcoded path!
-wine ~/.wine/drive_c/MinGW/bin/g++.exe /usr/share/windows-binaries/Hyperion-1.0/Src/Crypter/*.cpp \
-  -o /usr/share/windows-binaries/hyperion.exe 2>&1 \
-  | grep -v 'If something goes wrong, please rerun with\|for more detailed debugging output'
+  $(find /usr/share/windows-binaries/ -name "hyperion.cpp" -type f -print -quit) \
+  -o /usr/share/windows-binaries/crypter.exe
+# ln -sf /usr/share/windows-binaries/Hyperion-1.0/Src/Crypter/bin/crypter.exe /usr/share/windows-binaries/Hyperion-1.0/crypter.exe                                                            #***!!! hardcoded path!
+# wine ~/.wine/drive_c/MinGW/bin/g++.exe $(find /usr/share/windows-binaries/ -name "hyperion.cpp" -type f -print -quit) \
+#   -o /usr/share/windows-binaries/hyperion.exe 2>&1 \
+#   | grep -v 'If something goes wrong, please rerun with\|for more detailed debugging output'
 #--- Add to path
 mkdir -p /usr/local/bin/
 file=/usr/local/bin/hyperion
@@ -2979,15 +2979,15 @@ BWD="?"
 [[ "\${BWD}" == "?" ]] && echo -e ' '${RED}'[!]'${RESET}' Cant find \$1. Quitting...' && exit
 
 ## The magic!
-cd /usr/share/windows-binaries/Hyperion-1.0/
-$(which wine) ./Src/Crypter/bin/crypter.exe \${BWD}\${1} output.exe
+cd /usr/share/windows-binaries/
+$(which wine) crypter.exe \${BWD}\${1} output.exe
 
 ## Restore our path
 cd \${CWD}/
 sleep 1s
 
 ## Move the output file
-mv -f /usr/share/windows-binaries/Hyperion-1.0/output.exe \${2}
+mv -f /usr/share/windows-binaries/output.exe \${2}
 
 ## Generate file hashes
 for FILE in \${1} \${2}; do
